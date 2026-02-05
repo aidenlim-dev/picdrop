@@ -138,15 +138,11 @@ PicDrop은 QR 코드 하나로 모든 사진을 실시간으로 모아주는 서
 
 ## 🚀 빠른 시작
 
-### 설치
+### 로컬 개발
 ```bash
 cd projects/picdrop
 source venv/bin/activate
 pip install -r requirements.txt
-```
-
-### 실행
-```bash
 python manage.py runserver
 # http://127.0.0.1:8000/
 ```
@@ -157,6 +153,29 @@ URL: http://127.0.0.1:8000/admin/
 ID: admin
 PW: admin123
 ```
+
+### 프로덕션 배포 🌐
+**5분 안에 Railway에 배포하기:**
+
+1. **준비 확인**
+   ```bash
+   python check_deployment.py
+   ```
+
+2. **배포 가이드 선택**
+   - 빠른 배포: `QUICK_DEPLOY.md` (5분)
+   - 상세 가이드: `DEPLOYMENT.md` (완벽 가이드)
+   - 배포 리포트: `DEPLOYMENT_REPORT.md` (완료 현황)
+
+3. **필요한 계정**
+   - Railway (https://railway.app) - 호스팅
+   - Cloudinary (https://cloudinary.com) - 이미지 스토리지
+
+4. **무료 티어**
+   - Railway: $5 크레딧/월
+   - Cloudinary: 25GB 저장/전송
+
+**배포 URL**: _TBD (배포 후 업데이트)_
 
 ---
 
