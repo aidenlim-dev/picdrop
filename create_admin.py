@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Run this script to create admin user if it doesn't exist.
+Run this script to create/update admin user.
 Usage: python create_admin.py
 """
 import os
@@ -15,10 +15,21 @@ User = get_user_model()
 
 username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
 email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@picdrop.com')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'PicDrop2026!')
+password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'picdrop2026')
 
-if not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username=username, email=email, password=password)
+user, created = User.objects.get_or_create(
+    username=username,
+    defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+)
+
+if created:
+    user.set_password(password)
+    user.save()
     print(f"Superuser '{username}' created successfully!")
 else:
-    print(f"Superuser '{username}' already exists.")
+    # Update password even if user exists
+    user.set_password(password)
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    print(f"Superuser '{username}' password updated!")
