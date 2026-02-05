@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-Run this script to create/update admin user.
-Usage: python create_admin.py
+Create admin user - hardcoded for reliability
 """
 import os
+import sys
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'picdrop.settings')
@@ -13,23 +13,28 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@picdrop.com')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'picdrop2026')
+# Hardcoded values for reliability
+username = 'admin'
+email = 'admin@picdrop.com'
+password = 'picdrop2026'
 
-user, created = User.objects.get_or_create(
-    username=username,
-    defaults={'email': email, 'is_staff': True, 'is_superuser': True}
-)
-
-if created:
-    user.set_password(password)
-    user.save()
-    print(f"Superuser '{username}' created successfully!")
-else:
-    # Update password even if user exists
+try:
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+    )
+    
+    # Always update password
     user.set_password(password)
     user.is_staff = True
     user.is_superuser = True
     user.save()
-    print(f"Superuser '{username}' password updated!")
+    
+    if created:
+        print(f"SUCCESS: Superuser '{username}' created!")
+    else:
+        print(f"SUCCESS: Superuser '{username}' updated!")
+        
+except Exception as e:
+    print(f"ERROR creating superuser: {e}", file=sys.stderr)
+    sys.exit(1)
