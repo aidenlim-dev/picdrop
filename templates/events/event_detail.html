@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.name }} - 관리 - PicDrop{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <a href="{% url 'events:event_list' %}" class="text-indigo-600 hover:text-indigo-800 mb-4 inline-block">
+        ← 목록으로 돌아가기
+    </a>
+    
+    <div class="flex items-start justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ event.name }}</h1>
+            <p class="text-gray-600">📅 {{ event.event_date|date:"Y년 m월 d일" }}</p>
+        </div>
+        <a href="{% url 'admin:events_event_change' event.id %}" 
+           class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            ⚙️ 설정 수정
+        </a>
+    </div>
+</div>
+
+<!-- Stats & Links -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Stats Card -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="text-4xl mb-2">📷</div>
+        <div class="text-3xl font-bold text-gray-900">{{ photos.count }}장</div>
+        <div class="text-gray-600">업로드된 사진</div>
+    </div>
+    
+    <!-- Upload Link -->
+    <div class="bg-green-50 rounded-lg shadow-md p-6">
+        <div class="text-4xl mb-2">📤</div>
+        <div class="text-sm font-medium text-gray-700 mb-2">업로드 페이지</div>
+        <a href="{% url 'photos:upload' event.id %}" 
+           target="_blank"
+           class="text-green-600 hover:text-green-800 text-sm break-all">
+            {{ request.scheme }}://{{ request.get_host }}{% url 'photos:upload' event.id %}
+        </a>
+    </div>
+    
+    <!-- Live Wall Link -->
+    <div class="bg-indigo-50 rounded-lg shadow-md p-6">
+        <div class="text-4xl mb-2">🎬</div>
+        <div class="text-sm font-medium text-gray-700 mb-2">라이브 월</div>
+        <a href="{% url 'events:live_wall' event.id %}" 
+           target="_blank"
+           class="text-indigo-600 hover:text-indigo-800 text-sm break-all">
+            {{ request.scheme }}://{{ request.get_host }}{% url 'events:live_wall' event.id %}
+        </a>
+    </div>
+</div>
+
+<!-- QR Code -->
+{% if event.qr_code %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">QR 코드</h2>
+    <div class="flex items-center space-x-8">
+        <img src="{{ event.qr_code.url }}" alt="QR Code" class="w-64 h-64 border-4 border-gray-200 rounded-lg">
+        <div>
+            <p class="text-gray-700 mb-4">
+                이 QR 코드를 스캔하면 사진 업로드 페이지로 바로 이동합니다.<br>
+                이벤트 현장에 인쇄하거나 화면에 표시하세요.
+            </p>
+            <a href="{{ event.qr_code.url }}" 
+               download="picdrop_qr_{{ event.name }}.png"
+               class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                💾 QR 코드 다운로드
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Photos -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">업로드된 사진 ({{ photos.count }}장)</h2>
+    
+    {% if photos %}
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {% for photo in photos %}
+        <div class="relative group">
+            <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <img src="{{ photo.image.url }}" 
+                     alt="Photo" 
+                     class="w-full h-full object-cover">
+            </div>
+            
+            <!-- Info & Delete -->
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/70 transition-all rounded-lg flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 p-2">
+                <div class="text-white text-xs text-center mb-2">
+                    {% if photo.uploader_name %}
+                    <p class="font-medium">{{ photo.uploader_name }}</p>
+                    {% endif %}
+                    <p>{{ photo.uploaded_at|date:"m/d H:i" }}</p>
+                </div>
+                <form method="post" action="{% url 'events:delete_photo' event.id photo.id %}" 
+                      onsubmit="return confirm('이 사진을 삭제하시겠습니까?');">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition-colors">
+                        🗑️ 삭제
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 text-gray-500">
+        <div class="text-6xl mb-4">📸</div>
+        <p>아직 업로드된 사진이 없습니다</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

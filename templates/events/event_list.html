@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}이벤트 목록 - PicDrop{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">이벤트 목록</h1>
+    <p class="text-gray-600">진행 중인 이벤트를 선택하세요</p>
+</div>
+
+{% if events %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for event in events %}
+    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden fade-in">
+        <!-- QR Code -->
+        {% if event.qr_code %}
+        <div class="bg-gray-100 p-8 flex items-center justify-center">
+            <img src="{{ event.qr_code.url }}" alt="QR Code" class="w-48 h-48">
+        </div>
+        {% endif %}
+        
+        <!-- Event Info -->
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-2">{{ event.name }}</h2>
+            <p class="text-gray-600 text-sm mb-4">📅 {{ event.event_date|date:"Y년 m월 d일" }}</p>
+            
+            {% if event.description %}
+            <p class="text-gray-700 mb-4">{{ event.description|truncatewords:20 }}</p>
+            {% endif %}
+            
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span>📷 {{ event.photos.count }}장</span>
+                <span>⏰ {{ event.created_at|date:"m/d" }}</span>
+            </div>
+            
+            <!-- Actions -->
+            <div class="space-y-2">
+                <a href="{% url 'events:live_wall' event.id %}" 
+                   class="block w-full bg-indigo-600 text-white text-center px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                    🎬 라이브 월 보기
+                </a>
+                <a href="{% url 'photos:upload' event.id %}" 
+                   class="block w-full bg-green-600 text-white text-center px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    📤 사진 업로드
+                </a>
+                <a href="{% url 'events:event_detail' event.id %}" 
+                   class="block w-full bg-gray-600 text-white text-center px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    ⚙️ 관리하기
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-lg shadow-md p-12 text-center">
+    <div class="text-6xl mb-4">📸</div>
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">아직 이벤트가 없습니다</h2>
+    <p class="text-gray-600 mb-6">관리자 페이지에서 첫 이벤트를 만들어보세요!</p>
+    <a href="{% url 'admin:index' %}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+        관리자 페이지로 이동
+    </a>
+</div>
+{% endif %}
+{% endblock %}

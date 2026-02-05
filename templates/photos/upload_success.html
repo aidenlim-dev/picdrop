@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}업로드 완료 - PicDrop{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-12 text-center fade-in">
+        <!-- Success Icon -->
+        <div class="text-8xl mb-6">✅</div>
+        
+        <!-- Success Message -->
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">업로드 완료!</h1>
+        <p class="text-xl text-gray-600 mb-8">
+            {{ uploaded_count }}장의 사진이 성공적으로 업로드되었습니다.
+        </p>
+        
+        <!-- Actions -->
+        <div class="space-y-3">
+            <a href="{% url 'events:live_wall' event.id %}" 
+               class="block w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors text-lg font-medium">
+                🎬 라이브 월에서 확인하기
+            </a>
+            <a href="{% url 'photos:upload' event.id %}" 
+               class="block w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-medium">
+                📤 더 업로드하기
+            </a>
+            <a href="{% url 'events:event_list' %}" 
+               class="block w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors">
+                홈으로 돌아가기
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
